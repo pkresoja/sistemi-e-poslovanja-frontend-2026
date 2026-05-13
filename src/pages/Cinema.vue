@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import Loading from '@/components/Loading.vue';
+import type { CinemaModel } from '@/models/cinema.model';
 import { CinemaService } from '@/services/cinema.service';
 import { ref } from 'vue';
 
-const cinemas = ref<any[]>()
+const cinemas = ref<CinemaModel[]>()
 CinemaService.getCinemas()
     .then(rsp => cinemas.value = rsp.data)
 

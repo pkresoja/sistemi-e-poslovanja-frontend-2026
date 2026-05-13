@@ -1,12 +1,13 @@
+import type { CinemaModel } from "@/models/cinema.model"
 import { DataService } from "./data.service"
 
 export class CinemaService {
     static async getCinemas() {
-        return await DataService.useAxios<any[]>('/cinema')
+        return await DataService.useAxios<CinemaModel[]>('/cinema')
     }
 
     static async getCinemaById(id: number) {
-        return await DataService.useAxios<any>(`/cinema/${id}`)
+        return await DataService.useAxios<CinemaModel>(`/cinema/${id}`)
     }
 
     static async createCinema(obj: any) {

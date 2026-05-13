@@ -1,7 +1,10 @@
 import About from '@/pages/About.vue'
+import AddCinema from '@/pages/AddCinema.vue'
+import AddTimeTable from '@/pages/AddTimeTable.vue'
 import Cinema from '@/pages/Cinema.vue'
 import Details from '@/pages/Details.vue'
 import EditCinema from '@/pages/EditCinema.vue'
+import EditTimeTable from '@/pages/EditTimeTable.vue'
 import Home from '@/pages/Home.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -37,10 +40,31 @@ const router = createRouter({
       }
     },
     {
+      path: '/cinema/add',
+      component: AddCinema,
+      meta: {
+        title: 'Add Cinema'
+      }
+    },
+    {
       path: '/cinema/:id',
       component: EditCinema,
       meta: {
         title: 'Edit Cinema'
+      }
+    },
+    {
+      path: '/time-table/add',
+      component: AddTimeTable,
+      meta: {
+        title: 'Add Time Table'
+      }
+    },
+    {
+      path: '/time-table/:id',
+      component: EditTimeTable,
+      meta: {
+        title: 'Edit Time Table'
       }
     },
   ],

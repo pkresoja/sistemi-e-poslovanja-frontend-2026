@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 import Loading from '@/components/Loading.vue'
 import type { MovieModel } from '@/models/movie.model'
+import type { TimeTableModel } from '@/models/time.model'
 import { MovieService } from '@/services/movie.service'
+import { TimeTableService } from '@/services/time.service'
 import { computed, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -10,7 +12,7 @@ const id = Number(route.params.id)
 
 const movie = ref<MovieModel>()
 
-MovieService.getMovieById(id)
+MovieService.getById(id)
   .then(rsp => {
     movie.value = rsp.data
   })
@@ -53,6 +55,16 @@ function formatScreeningTime(value: string) {
     minute: '2-digit'
   })
 }
+
+function remove(timeTable: TimeTableModel) {
+    if (!confirm(`Obrisi projekciju ${timeTable.cinema?.name} u ${timeTable.startTime}h ?`))
+        return
+
+    TimeTableService.deleteById(timeTable.timeTableId)
+        .then(rsp => {
+            movie.value!.timeTables = movie.value!.timeTables.filter(tt => tt.timeTableId !== timeTable.timeTableId)
+        })
+}
 </script>
 
 <template>
@@ -65,11 +77,7 @@ function formatScreeningTime(value: string) {
         <!-- Poster -->
         <div class="col-12 col-md-4 col-lg-3">
           <div class="poster-wrapper">
-            <img
-              :src="movie.poster"
-              :alt="movie.title"
-              class="movie-poster"
-            />
+            <img :src="movie.poster" :alt="movie.title" class="movie-poster" />
           </div>
         </div>
 
@@ -79,11 +87,8 @@ function formatScreeningTime(value: string) {
             <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-3">
               <div>
                 <div class="mb-2">
-                  <span
-                    v-for="g in movie.movieGenres"
-                    :key="g.movieGenreId"
-                    class="badge rounded-pill text-bg-primary me-2 mb-2"
-                  >
+                  <span v-for="g in movie.movieGenres" :key="g.movieGenreId"
+                    class="badge rounded-pill text-bg-primary me-2 mb-2">
                     <i class="fa-solid fa-tag me-1"></i>
                     {{ g.genre.name }}
                   </span>
@@ -93,24 +98,15 @@ function formatScreeningTime(value: string) {
                   {{ movie.title }}
                 </h1>
 
-                <p
-                  v-if="movie.originalTitle && movie.originalTitle !== movie.title"
-                  class="text-muted mb-0"
-                >
+                <p v-if="movie.originalTitle && movie.originalTitle !== movie.title" class="text-muted mb-0">
                   <i class="fa-solid fa-language me-2"></i>
                   {{ movie.originalTitle }}
                 </p>
               </div>
 
               <div>
-                <span
-                  class="status-pill"
-                  :class="movie.active ? 'status-active' : 'status-inactive'"
-                >
-                  <i
-                    :class="movie.active ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'"
-                    class="me-2"
-                  ></i>
+                <span class="status-pill" :class="movie.active ? 'status-active' : 'status-inactive'">
+                  <i :class="movie.active ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark'" class="me-2"></i>
                   {{ movie.active ? 'Active' : 'Inactive' }}
                 </span>
               </div>
@@ -181,11 +177,7 @@ function formatScreeningTime(value: string) {
               </h5>
 
               <div class="cast-list">
-                <span
-                  v-for="a in movie.movieActors"
-                  :key="a.movieActorId"
-                  class="cast-chip"
-                >
+                <span v-for="a in movie.movieActors" :key="a.movieActorId" class="cast-chip">
                   <i class="fa-solid fa-user me-2"></i>
                   {{ a.actor.name }}
                 </span>
@@ -212,10 +204,7 @@ function formatScreeningTime(value: string) {
         </div>
 
         <!-- Empty state -->
-        <div
-          v-if="movie.timeTables.length === 0"
-          class="empty-state text-center py-5"
-        >
+        <div v-if="movie.timeTables.length === 0" class="empty-state text-center py-5">
           <div class="empty-icon mb-3">
             <i class="fa-solid fa-calendar-xmark"></i>
           </div>
@@ -251,12 +240,9 @@ function formatScreeningTime(value: string) {
             </thead>
 
             <tbody>
-              <tr
-                v-for="tt in movie.timeTables"
-                :key="tt.timeTableId"
-              >
+              <tr v-for="tt in movie.timeTables" :key="tt.timeTableId">
                 <td class="fw-semibold">
-                  {{ tt.cinema.name }}
+                  {{ tt.cinema?.name }}
                 </td>
 
                 <td>
@@ -268,10 +254,14 @@ function formatScreeningTime(value: string) {
                 </td>
 
                 <td class="text-end">
-                  <button class="btn btn-sm btn-primary">
-                    <i class="fa-solid fa-ticket-simple me-1"></i>
-                    Order
-                  </button>
+                  <div class="btn-group">
+                    <RouterLink class="btn btn-sm btn-success" :to="`/time-table/${tt.timeTableId}`">
+                      <i class="fa-solid fa-pen-to-square"></i>
+                    </RouterLink>
+                    <button type="button" class="btn btn-sm btn-danger" @click="remove(tt)">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -280,16 +270,12 @@ function formatScreeningTime(value: string) {
 
         <!-- Cards for mobile -->
         <div class="d-md-none">
-          <div
-            v-for="tt in movie.timeTables"
-            :key="tt.timeTableId"
-            class="screening-card"
-          >
+          <div v-for="tt in movie.timeTables" :key="tt.timeTableId" class="screening-card">
             <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
               <div>
                 <div class="screening-cinema">
                   <i class="fa-solid fa-building me-2"></i>
-                  {{ tt.cinema.name }}
+                  {{ tt.cinema?.name }}
                 </div>
 
                 <div class="screening-time">
@@ -303,10 +289,14 @@ function formatScreeningTime(value: string) {
               </div>
             </div>
 
-            <button class="btn btn-primary w-100 mt-2">
-              <i class="fa-solid fa-ticket-simple me-1"></i>
-              Order
-            </button>
+            <div class="btn-group w-100">
+              <RouterLink class="btn btn-sm btn-success" :to="`/time-table/${tt.timeTableId}`">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </RouterLink>
+              <button type="button" class="btn btn-sm btn-danger" @click="remove(tt)">
+                <i class="fa-solid fa-trash-can"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -462,6 +452,7 @@ function formatScreeningTime(value: string) {
 }
 
 @media (max-width: 767.98px) {
+
   .poster-wrapper,
   .movie-poster {
     min-height: 360px;
