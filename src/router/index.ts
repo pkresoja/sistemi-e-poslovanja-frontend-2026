@@ -6,6 +6,9 @@ import Details from '@/pages/Details.vue'
 import EditCinema from '@/pages/EditCinema.vue'
 import EditTimeTable from '@/pages/EditTimeTable.vue'
 import Home from '@/pages/Home.vue'
+import Login from '@/pages/Login.vue'
+import Signup from '@/pages/Signup.vue'
+import Verify from '@/pages/Verify.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const router = createRouter({
@@ -65,6 +68,27 @@ const router = createRouter({
       component: EditTimeTable,
       meta: {
         title: 'Edit Time Table'
+      }
+    },
+    {
+      path: '/login',
+      component: Login,
+      meta: {
+        title: 'Login'
+      }
+    },
+    {
+      path: '/signup',
+      component: Signup,
+      meta: {
+        title: 'Signup Now'
+      }
+    },
+    {
+      path: '/verify',
+      component: Verify,
+      meta: {
+        title: 'Email Verification'
       }
     },
   ],

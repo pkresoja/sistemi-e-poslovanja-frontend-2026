@@ -1,5 +1,11 @@
 <script setup lang="ts">
+import { useRoute } from 'vue-router';
+import { useLogout } from './hooks/logout.hook';
+import { AuthService } from './services/auth.service';
+
 const year = new Date().getFullYear()
+const logout = useLogout()
+const route = useRoute()
 </script>
 
 <template>
@@ -34,12 +40,36 @@ const year = new Date().getFullYear()
               <i class="fa-solid fa-clock-rotate-left"></i> Add Time Table
             </RouterLink>
           </li>
+          <template v-if="AuthService.hasAuth()">
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/cart">
+                <i class="fa-solid fa-cart-shopping"></i> Cart
+              </RouterLink>
+            </li>
+            <li class="nav-item">
+              <button class="nav-link" type="button" @click="logout">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+              </button>
+            </li>
+          </template>
+          <template v-else>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/login">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Login
+              </RouterLink>
+            </li>
+            <li class="nav-item">
+              <RouterLink class="nav-link" to="/login">
+                <i class="fa-solid fa-user-plus"></i> Signup
+              </RouterLink>
+            </li>
+          </template>
         </ul>
       </div>
     </div>
   </nav>
   <div class="container mt-3">
-    <RouterView />
+    <RouterView :key="route.fullPath" />
     <footer class="text-center my-3">
       &copy; {{ year }} Univerzitet Singidunum
     </footer>
