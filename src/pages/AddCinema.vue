@@ -1,9 +1,11 @@
 <script lang="ts" setup>
+import { useLogout } from '@/hooks/logout.hook';
 import { CinemaService } from '@/services/cinema.service';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter()
+const logout = useLogout()
 const cinema = ref({
     name: '',
     address: ''
@@ -15,6 +17,7 @@ function update() {
 
     CinemaService.createCinema(cinema.value)
         .then(rsp => router.push('/cinema'))
+        .catch(e => logout(e))
 }
 </script>
 

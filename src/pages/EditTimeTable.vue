@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import Loading from '@/components/Loading.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { CinemaModel } from '@/models/cinema.model';
 import type { MovieModel } from '@/models/movie.model';
 import type { TimeTableModel } from '@/models/time.model';
@@ -12,15 +13,18 @@ import { useRoute, useRouter } from 'vue-router';
 
 const route = useRoute()
 const router = useRouter()
+const logout = useLogout()
 const id = Number(route.params.id)
 
 const timeTable = ref<TimeTableModel>()
 TimeTableService.getById(id)
     .then(rsp => timeTable.value = rsp.data)
+    .catch(e => logout(e))
 
 const cinemas = ref<CinemaModel[]>()
 CinemaService.getCinemas()
     .then(rsp => cinemas.value = rsp.data)
+    .catch(e => logout(e))
 
 const movies = ref<MovieModel[]>()
 MovieService.getAllMovies()

@@ -15,6 +15,7 @@ function verify() {
 
     DataService.verifyEmail(code.value)
         .then(rsp => router.push('/login'))
+        .catch(e => alert('Error: ' + e.message))
 }
 </script>
 

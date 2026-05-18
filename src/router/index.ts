@@ -1,6 +1,6 @@
-import About from '@/pages/About.vue'
 import AddCinema from '@/pages/AddCinema.vue'
 import AddTimeTable from '@/pages/AddTimeTable.vue'
+import Cart from '@/pages/Cart.vue'
 import Cinema from '@/pages/Cinema.vue'
 import Details from '@/pages/Details.vue'
 import EditCinema from '@/pages/EditCinema.vue'
@@ -19,13 +19,6 @@ const router = createRouter({
       component: Home,
       meta: {
         title: 'Home'
-      }
-    },
-    {
-      path: '/about',
-      component: About,
-      meta: {
-        title: 'About'
       }
     },
     {
@@ -89,6 +82,13 @@ const router = createRouter({
       component: Verify,
       meta: {
         title: 'Email Verification'
+      }
+    },
+    {
+      path: '/cart',
+      component: Cart,
+      meta: {
+        title: 'Cart'
       }
     },
   ],

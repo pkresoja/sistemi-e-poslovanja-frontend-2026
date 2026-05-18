@@ -1,12 +1,16 @@
 <script lang="ts" setup>
 import Loading from '@/components/Loading.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { CinemaModel } from '@/models/cinema.model';
 import { CinemaService } from '@/services/cinema.service';
 import { ref } from 'vue';
 
+const logout = useLogout()
 const cinemas = ref<CinemaModel[]>()
+
 CinemaService.getCinemas()
     .then(rsp => cinemas.value = rsp.data)
+    .catch(e => logout(e))
 
 function remove(cinema: any) {
     if (!confirm(`Obrisi bioskop ${cinema.name}?`))

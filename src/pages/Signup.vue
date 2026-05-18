@@ -28,6 +28,7 @@ function signup() {
             sessionStorage.setItem('verify_email', payload.value.email)
             router.push('/verify')
         })
+        .catch(e => alert('Error: ' + e.message))
 }
 </script>
 

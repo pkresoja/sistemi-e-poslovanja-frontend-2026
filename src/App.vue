@@ -26,11 +26,6 @@ const route = useRoute()
             </RouterLink>
           </li>
           <li class="nav-item">
-            <RouterLink class="nav-link" to="/about">
-              <i class="fa-solid fa-star"></i> About
-            </RouterLink>
-          </li>
-          <li class="nav-item">
             <RouterLink class="nav-link" to="/cinema">
               <i class="fa-solid fa-building"></i> Cinemas
             </RouterLink>

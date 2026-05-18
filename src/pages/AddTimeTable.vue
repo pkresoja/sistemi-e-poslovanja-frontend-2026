@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import Loading from '@/components/Loading.vue';
+import { useLogout } from '@/hooks/logout.hook';
 import type { CinemaModel } from '@/models/cinema.model';
 import type { MovieModel } from '@/models/movie.model';
 import { CinemaService } from '@/services/cinema.service';
@@ -10,7 +11,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter()
-
+const logout = useLogout()
 const timeTable = ref({
     cinemaId: 0,
     movieId: 0,
@@ -24,6 +25,7 @@ CinemaService.getCinemas()
         cinemas.value = rsp.data
         timeTable.value.cinemaId = rsp.data[0]!.cinemaId
     })
+    .catch(e => logout(e))
 
 const movies = ref<MovieModel[]>()
 MovieService.getAllMovies()
@@ -38,6 +40,7 @@ function update() {
 
     TimeTableService.create(timeTable.value)
         .then(rsp => router.push(`/details/${timeTable.value?.movieId}`))
+        .catch(e => logout(e))
 }
 </script>
 
