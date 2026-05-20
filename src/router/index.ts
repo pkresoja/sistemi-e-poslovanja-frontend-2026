@@ -8,6 +8,7 @@ import EditTimeTable from '@/pages/EditTimeTable.vue'
 import Home from '@/pages/Home.vue'
 import Login from '@/pages/Login.vue'
 import Signup from '@/pages/Signup.vue'
+import User from '@/pages/User.vue'
 import Verify from '@/pages/Verify.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
@@ -91,6 +92,17 @@ const router = createRouter({
         title: 'Cart'
       }
     },
+    {
+      path: '/user',
+      component: User,
+      meta: {
+        title: 'User Profile'
+      }
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/'
+    }
   ],
 })
 

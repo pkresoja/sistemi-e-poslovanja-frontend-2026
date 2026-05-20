@@ -42,6 +42,11 @@ const route = useRoute()
               </RouterLink>
             </li>
             <li class="nav-item">
+              <RouterLink class="nav-link" to="/user">
+                <i class="fa-solid fa-user"></i> User
+              </RouterLink>
+            </li>
+            <li class="nav-item">
               <button class="nav-link" type="button" @click="logout">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
               </button>

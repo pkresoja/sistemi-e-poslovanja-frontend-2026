@@ -1,13 +1,17 @@
 <script lang="ts" setup>
 import Loading from '@/components/Loading.vue'
+import { useLogout } from '@/hooks/logout.hook'
 import type { MovieModel } from '@/models/movie.model'
 import type { TimeTableModel } from '@/models/time.model'
+import { DataService } from '@/services/data.service'
 import { MovieService } from '@/services/movie.service'
 import { TimeTableService } from '@/services/time.service'
 import { computed, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
+const logout = useLogout()
 const id = Number(route.params.id)
 
 const movie = ref<MovieModel>()
@@ -57,13 +61,23 @@ function formatScreeningTime(value: string) {
 }
 
 function remove(timeTable: TimeTableModel) {
-    if (!confirm(`Obrisi projekciju ${timeTable.cinema?.name} u ${timeTable.startTime}h ?`))
-        return
+  if (!confirm(`Obrisi projekciju ${timeTable.cinema?.name} u ${timeTable.startTime}h ?`))
+    return
 
-    TimeTableService.deleteById(timeTable.timeTableId)
-        .then(rsp => {
-            movie.value!.timeTables = movie.value!.timeTables.filter(tt => tt.timeTableId !== timeTable.timeTableId)
-        })
+  TimeTableService.deleteById(timeTable.timeTableId)
+    .then(rsp => {
+      movie.value!.timeTables = movie.value!.timeTables.filter(tt => tt.timeTableId !== timeTable.timeTableId)
+    })
+    .catch(e => logout(e))
+}
+
+function addToCart(timeTableId: number) {
+  if (!confirm(`Dodaj u korpu?`))
+    return
+
+  DataService.useAxios(`/invoice/cart/add/${timeTableId}`, 'put')
+    .then(() => router.push('/cart'))
+    .catch(e => logout(e))
 }
 </script>
 
@@ -255,9 +269,9 @@ function remove(timeTable: TimeTableModel) {
 
                 <td class="text-end">
                   <div class="btn-group">
-                    <RouterLink class="btn btn-sm btn-primary" :to="`/time-table/${tt.timeTableId}/order`">
+                    <button type="button" class="btn btn-sm btn-primary" @click="addToCart(tt.timeTableId)">
                       <i class="fa-solid fa-cart-arrow-down"></i>
-                    </RouterLink>
+                    </button>
                     <RouterLink class="btn btn-sm btn-success" :to="`/time-table/${tt.timeTableId}`">
                       <i class="fa-solid fa-pen-to-square"></i>
                     </RouterLink>
@@ -293,9 +307,9 @@ function remove(timeTable: TimeTableModel) {
             </div>
 
             <div class="btn-group w-100">
-              <RouterLink class="btn btn-sm btn-primary" :to="`/time-table/${tt.timeTableId}/order`">
+              <button type="button" class="btn btn-sm btn-primary" @click="addToCart(tt.timeTableId)">
                 <i class="fa-solid fa-cart-arrow-down"></i>
-              </RouterLink>
+              </button>
               <RouterLink class="btn btn-sm btn-success" :to="`/time-table/${tt.timeTableId}`">
                 <i class="fa-solid fa-pen-to-square"></i>
               </RouterLink>
