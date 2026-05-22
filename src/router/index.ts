@@ -6,7 +6,9 @@ import Details from '@/pages/Details.vue'
 import EditCinema from '@/pages/EditCinema.vue'
 import EditTimeTable from '@/pages/EditTimeTable.vue'
 import Home from '@/pages/Home.vue'
+import Invoice from '@/pages/Invoice.vue'
 import Login from '@/pages/Login.vue'
+import Print from '@/pages/Print.vue'
 import Signup from '@/pages/Signup.vue'
 import User from '@/pages/User.vue'
 import Verify from '@/pages/Verify.vue'
@@ -97,6 +99,20 @@ const router = createRouter({
       component: User,
       meta: {
         title: 'User Profile'
+      }
+    },
+    {
+      path: '/invoice/:id/print',
+      component: Print,
+      meta: {
+        title: 'Invoice Print'
+      }
+    },
+    {
+      path: '/invoice/:id',
+      component: Invoice,
+      meta: {
+        title: 'Invoice Details'
       }
     },
     {

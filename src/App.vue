@@ -76,4 +76,14 @@ const route = useRoute()
   </div>
 </template>
 
-<style scoped></style>
+<style>
+@media print {
+  footer {
+    display: none !important;
+  }
+
+  nav {
+    display: none !important;
+  }
+}
+</style>

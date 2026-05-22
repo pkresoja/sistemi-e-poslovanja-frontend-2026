@@ -70,9 +70,9 @@ function getTotal(invoice: InvoiceModel) {
                                 <td>{{ new Date(invoice.pursTime).toLocaleString() }}</td>
                                 <td>
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-sm btn-info">
-                                            <i class="fa-solid fa-qrcode"></i>
-                                        </button>
+                                        <RouterLink :to="`/invoice/${invoice.invoiceId}`" class="btn btn-sm btn-info">
+                                            <i class="fa-solid fa-file-invoice"></i>
+                                        </RouterLink>
                                     </div>
                                 </td>
                             </tr>

@@ -1,10 +1,10 @@
+import type { InvoiceItemModel } from "./item.model"
+
 export interface InvoiceModel {
     invoiceId: number
     pursId: string
     pursTime: string
-    invoiceItems: {
-        invoiceItemId: number
-        pricePerItem: number
-        count: number
-    }[]
+    pursCounter: string
+    createdAt: string
+    invoiceItems: InvoiceItemModel[]
 }
