@@ -27,15 +27,16 @@ CinemaService.getCinemas()
     .catch(e => logout(e))
 
 const movies = ref<MovieModel[]>()
-MovieService.getAllMovies()
+MovieService.getMovies()
     .then(rsp => movies.value = rsp.data)
+    .catch(e => logout(e))
 
 function update() {
     if (!confirm('Save changes?'))
         return
 
     TimeTableService.update(id, timeTable.value)
-        .then(rsp => router.push(`/details/${timeTable.value?.movieId}`))
+        .then(rsp => router.push(`/`))
 }
 </script>
 
@@ -57,7 +58,7 @@ function update() {
                 <label for="movie" class="form-label">Movie:</label>
                 <select class="form-select" id="movie" v-model="timeTable.movieId">
                     <option v-for="m in movies" :value="m.movieId">
-                        {{ m.movieId }} {{ m.title }}
+                        [{{ m.movieId }}] {{ m.title }}
                     </option>
                 </select>
             </div>

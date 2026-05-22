@@ -6,6 +6,10 @@ export class CinemaService {
         return await DataService.useAxios<CinemaModel[]>('/cinema')
     }
 
+    static async getCinemasWithTimeTables() {
+        return await DataService.useAxios<CinemaModel[]>('/cinema/with-time-tables')
+    }
+
     static async getCinemaById(id: number) {
         return await DataService.useAxios<CinemaModel>(`/cinema/${id}`)
     }

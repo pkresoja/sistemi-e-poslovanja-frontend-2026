@@ -2,24 +2,18 @@
 import Loading from '@/components/Loading.vue'
 import { useLogout } from '@/hooks/logout.hook'
 import type { MovieModel } from '@/models/movie.model'
-import type { TimeTableModel } from '@/models/time.model'
-import { DataService } from '@/services/data.service'
 import { MovieService } from '@/services/movie.service'
-import { TimeTableService } from '@/services/time.service'
 import { computed, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const router = useRouter()
 const logout = useLogout()
 const id = Number(route.params.id)
 
 const movie = ref<MovieModel>()
-
 MovieService.getById(id)
-  .then(rsp => {
-    movie.value = rsp.data
-  })
+  .then(rsp => movie.value = rsp.data)
+  .catch(e => logout(e))
 
 const formattedReleaseDate = computed(() => {
   if (!movie.value?.startDate) return 'N/A'
@@ -42,43 +36,6 @@ const formattedRuntime = computed(() => {
 
   return `${hours}h ${minutes}min`
 })
-
-function formatScreeningTime(value: string) {
-  if (!value) return 'N/A'
-
-  const date = new Date(value)
-
-  if (isNaN(date.getTime())) {
-    return value
-  }
-
-  return date.toLocaleString('en-GB', {
-    day: '2-digit',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
-}
-
-function remove(timeTable: TimeTableModel) {
-  if (!confirm(`Obrisi projekciju ${timeTable.cinema?.name} u ${timeTable.startTime}h ?`))
-    return
-
-  TimeTableService.deleteById(timeTable.timeTableId)
-    .then(rsp => {
-      movie.value!.timeTables = movie.value!.timeTables.filter(tt => tt.timeTableId !== timeTable.timeTableId)
-    })
-    .catch(e => logout(e))
-}
-
-function addToCart(timeTableId: number) {
-  if (!confirm(`Dodaj u korpu?`))
-    return
-
-  DataService.useAxios(`/invoice/cart/add/${timeTableId}`, 'put')
-    .then(() => router.push('/cart'))
-    .catch(e => logout(e))
-}
 </script>
 
 <template>
@@ -176,7 +133,7 @@ function addToCart(timeTableId: number) {
                   <div>
                     <div class="info-label">Screenings</div>
                     <div class="info-value">
-                      {{ movie.timeTables.length }}
+                      N/A
                     </div>
                   </div>
                 </div>
@@ -196,126 +153,6 @@ function addToCart(timeTableId: number) {
                   {{ a.actor.name }}
                 </span>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Screenings -->
-    <div class="card border-0 shadow-sm">
-      <div class="card-body p-4">
-        <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
-          <div>
-            <h4 class="mb-1">
-              <i class="fa-solid fa-film me-2 text-primary"></i>
-              Screenings
-            </h4>
-            <p class="text-muted mb-0">
-              Available cinema times for this movie
-            </p>
-          </div>
-        </div>
-
-        <!-- Empty state -->
-        <div v-if="movie.timeTables.length === 0" class="empty-state text-center py-5">
-          <div class="empty-icon mb-3">
-            <i class="fa-solid fa-calendar-xmark"></i>
-          </div>
-
-          <h5 class="mb-2">No screenings available</h5>
-
-          <p class="text-muted mb-0">
-            There are currently no scheduled screenings for this movie.
-          </p>
-        </div>
-
-        <!-- Table for md+ -->
-        <div v-else class="table-responsive d-none d-md-block">
-          <table class="table align-middle mb-0">
-            <thead>
-              <tr>
-                <th>
-                  <i class="fa-solid fa-building me-2"></i>
-                  Cinema
-                </th>
-                <th>
-                  <i class="fa-solid fa-calendar-clock me-2"></i>
-                  Start Time
-                </th>
-                <th>
-                  <i class="fa-solid fa-money-bill-wave me-2"></i>
-                  Price
-                </th>
-                <th class="text-end">
-                  Options
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr v-for="tt in movie.timeTables" :key="tt.timeTableId">
-                <td class="fw-semibold">
-                  {{ tt.cinema?.name }}
-                </td>
-
-                <td>
-                  {{ formatScreeningTime(tt.startTime) }}
-                </td>
-
-                <td>
-                  {{ tt.price }} RSD
-                </td>
-
-                <td class="text-end">
-                  <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-primary" @click="addToCart(tt.timeTableId)">
-                      <i class="fa-solid fa-cart-arrow-down"></i>
-                    </button>
-                    <RouterLink class="btn btn-sm btn-success" :to="`/time-table/${tt.timeTableId}`">
-                      <i class="fa-solid fa-pen-to-square"></i>
-                    </RouterLink>
-                    <button type="button" class="btn btn-sm btn-danger" @click="remove(tt)">
-                      <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Cards for mobile -->
-        <div class="d-md-none">
-          <div v-for="tt in movie.timeTables" :key="tt.timeTableId" class="screening-card">
-            <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
-              <div>
-                <div class="screening-cinema">
-                  <i class="fa-solid fa-building me-2"></i>
-                  {{ tt.cinema?.name }}
-                </div>
-
-                <div class="screening-time">
-                  <i class="fa-solid fa-clock me-2"></i>
-                  {{ formatScreeningTime(tt.startTime) }}
-                </div>
-              </div>
-
-              <div class="screening-price">
-                {{ tt.price }} RSD
-              </div>
-            </div>
-
-            <div class="btn-group w-100">
-              <button type="button" class="btn btn-sm btn-primary" @click="addToCart(tt.timeTableId)">
-                <i class="fa-solid fa-cart-arrow-down"></i>
-              </button>
-              <RouterLink class="btn btn-sm btn-success" :to="`/time-table/${tt.timeTableId}`">
-                <i class="fa-solid fa-pen-to-square"></i>
-              </RouterLink>
-              <button type="button" class="btn btn-sm btn-danger" @click="remove(tt)">
-                <i class="fa-solid fa-trash-can"></i>
-              </button>
             </div>
           </div>
         </div>
